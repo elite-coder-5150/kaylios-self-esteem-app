@@ -70,6 +70,48 @@
     }
  };
  
+ export const getNoteById = async (req, res) => {
+    try {
+        const { note_id } = req.params;
+
+        if (!note_id) {
+            return res.status(403).send({
+                message: 'note id is required'
+            })
+        }
+
+        const sql = /* sql */ `
+            select 
+                n.note_id,
+                n.user_id,
+                n.title,
+                n.content,
+                n.created_at,
+                n.updated_at
+            from notes as n
+            where n.note_id = ?
+        `;
+
+        const result = await getResults(sql, [note_id]);
+
+        if (result.length === 0) {
+            return res.status (404).send({
+                message: 'Note not found'
+            });
+        } else {
+            return res.status(200).send({
+                message: 'successfully retrieved note',
+                data: result[0]
+            })
+        }
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).send({
+             message: 'Internal server error'
+        });
+    }
+ }
  export const getSingleNote = async (req, res) => {
     try {
         const { note_id } = req.params;
