@@ -35,6 +35,50 @@ export const createUser = async (req, res) => {
     }
 }
 
+export const getUserById = async (req, res) => {
+    try {
+        const { user_id } = req.params;
+
+        if (!user_id) {
+            return res.status (403).send({
+                message: 'user id is required'
+            })
+        }
+
+        const sql = /* sql */`
+            select
+                u.user_id,
+                u.user_name,
+                u.password,
+                u.email,
+                u.created_at
+            from users as u
+            where u.user_id = ?
+            limit 1
+        `;
+
+        const result = await getResults(sql, [user_id]);
+
+        if (result.length === 0) {
+            return res.status(404).send({
+                message: 'User not found'
+            });
+        } else {
+        }
+        return res.status(201).send({
+            message: 'successfully retrieved user by id',
+            data: result[0]
+        })
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).send({
+             message: 'Internal server error'
+        });
+    }
+};
+
 export const getSingleUser = async (req, res) => {
     try {
         const {user_id} = req.params.user_id;
